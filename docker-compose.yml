@@ -1,0 +1,86 @@
+# This is the docker-compose-yml file that must be able to start
+# your group's backend.
+
+# Remember to comment this file well!
+
+# After you have Docker and Docker Compose installed,
+# and this file is ready, you use this file and run it with:
+# `docker-compose up --build`
+
+version: "3"
+
+services:
+  server-a:
+    image: group013/node-swagger:3a
+    depends_on:
+      - server-b
+      - rabbitmq
+      - mongodb
+    links:
+      - rabbitmq
+    build:
+      context:  ./backend/server-a
+      dockerfile: Dockerfile
+    # Expose containers 8080 to local port 12345
+    ports:
+      - "12345:8080"
+    command: ["./utils/wait-for-it.sh", "rabbitmq:5672", "--",  "npm", "start"]
+    networks:
+      - backend
+    environment:
+      - RABBIT_MQ_URL=amqp://rabbitmq:5672
+      - TASK_QUEUE=task_queue
+      - READY_QUEUE=ready_queue
+      - MONGO_URI=mongodb://mongodb:27017/docker-node-mongo
+      - CORS_ORIGIN=http://localhost:3000
+      - SECRET=webarch13secret
+
+  server-b:
+    image: group013/serverb
+    restart: always
+    depends_on: 
+      - rabbitmq
+    links:
+      - rabbitmq
+    build:
+      dockerfile: Dockerfile
+      context: ./backend/server-b
+    command: ["./utils/wait-for-it.sh", "rabbitmq:5672", "--",  "npm", "start"]
+    networks:
+      - backend
+    environment:
+      - RABBIT_MQ_URL=amqp://rabbitmq:5672
+      - TASK_QUEUE=task_queue
+  
+  mongodb:
+    image: mongo:3.4.18-jessie
+    logging:
+      driver: none
+    # Specifies data persistence for the database
+    volumes:
+      - mmas_db:/data/db
+    ports:
+      - "27017:27017"
+    command: mongod --noauth --smallfiles
+    networks:
+      - backend
+
+  rabbitmq:
+    build:
+      context: ./backend/rabbitmq
+      dockerfile: Dockerfile
+    image: "rabbitmq:3-management"
+    logging:
+      driver: none
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mmas_db:

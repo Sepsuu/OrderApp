@@ -1,0 +1,25 @@
+.header {
+    overflow: hidden;
+    background: linear-gradient(90deg, #ee5c87, #f1a4b5, #d587b3);
+    padding: 20px 10px;
+  }
+  .header a {
+    float: left;
+    color: black;
+    text-align: center;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px; 
+    line-height: 25px;
+    border-radius: 4px;
+  }
+  
+.link:hover {
+    background: rgb(106, 252, 93);
+    color: black;
+}
+  
+.link:active {
+    background: rgb(166, 255, 158);
+    color: black;
+}
