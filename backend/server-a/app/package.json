@@ -14,7 +14,7 @@
   "private": true,
   "dependencies": {
     "amqplib": "^0.5.3",
-    "bcrypt": "^3.0.5",
+    "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "connect": "^3.2.0",
